@@ -5,9 +5,11 @@
     <link rel="stylesheet" href="{% static '/css/style.css' %}" />
   </head>
   <body>
+    
     {%block content %}
     <h1> Welcome </h1>
     <p>Waiting for more customization</p>
+    {{request.user}}
     {% endblock content %}
   </body>
 </html>

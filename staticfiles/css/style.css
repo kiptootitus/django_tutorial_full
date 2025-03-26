@@ -1,3 +1,4 @@
+/* filepath: /home/naruto/Documents/git-project/django_tutorial_full/staticfiles/css/style.css */
 nav {
   background-color: #333;
   padding: 10px 0;
@@ -8,6 +9,7 @@ nav ul {
   margin: 0;
   padding: 0;
   display: flex;
+  justify-content: center;
 }
 
 nav ul li {

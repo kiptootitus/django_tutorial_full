@@ -100,20 +100,15 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-    BASE_DIR / 'staticfiles',  # Ensure this matches where admin static files might be
+    BASE_DIR / 'static',  # Where your source static files live (e.g., custom CSS/JS)
 ]
-STATICFILES_BASE_DIR = BASE_DIR / 'staticfiles'
-STATICFILES_BASE_DIR.mkdir(exist_ok=True, parents=True)
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
-STATICFILES_VENDOR_DIR = STATICFILES_BASE_DIR / "vendors"
-STATIC_ROOT = BASE_DIR / "local-cdn"
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Where collected files go for production
 
 
 # Default primary key field type
