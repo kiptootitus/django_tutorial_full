@@ -1,6 +1,6 @@
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,6 +24,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts.apps.AccountsConfig',
+    
+    # thirdparty apps
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
@@ -99,8 +102,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']  # Ensure 'static' folder exists
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directory where collectstatic will collect files
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+    BASE_DIR / 'staticfiles',  # Ensure this matches where admin static files might be
+]
+STATICFILES_BASE_DIR = BASE_DIR / 'staticfiles'
+STATICFILES_BASE_DIR.mkdir(exist_ok=True, parents=True)
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+STATICFILES_VENDOR_DIR = STATICFILES_BASE_DIR / "vendors"
+STATIC_ROOT = BASE_DIR / "local-cdn"
 
 
 # Default primary key field type
