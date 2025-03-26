@@ -1,10 +1,9 @@
-/* filepath: /home/naruto/Documents/git-project/django_tutorial_full/staticfiles/css/style.css */
-nav {
+.nav {
   background-color: #333;
   padding: 10px 0;
 }
 
-nav ul {
+.nav ul {
   list-style-type: none;
   margin: 0;
   padding: 0;

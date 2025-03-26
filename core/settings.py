@@ -4,14 +4,13 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-88$(w8z8w9r%-n!%!n2_k41)&6lyoi$df94^a1kldn#aw!@lv$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -27,6 +26,7 @@ INSTALLED_APPS = [
     
     # thirdparty apps
     'phonenumber_field',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -44,7 +44,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR /'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -99,18 +99,19 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'# URL prefix for serving static files
+
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # Where your source static files live (e.g., custom CSS/JS)
+    BASE_DIR / 'static',  # Store custom static files here
 ]
+
+# STATIC_ROOT is not needed in development (used in production with collectstatic)
+STATIC_ROOT = BASE_DIR / 'staticfiles/'  # Or just remove this line
+
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Where collected files go for production
-
 
 # Default primary key field type
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

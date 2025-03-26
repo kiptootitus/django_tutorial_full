@@ -1,8 +1,12 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
+from rest_framework import generics
+from django.contrib.auth.models import User
+
 
 from accounts.models import Profile
+from accounts.serializers import RegisterSerializer
 
 def home(request):
     return render(request, 'accounts/home.html')
@@ -22,3 +26,8 @@ class ProfilesListView(View):
 
 class AccountsListView(ProfilesListView):
     model = Profile
+
+
+class RegisterCreateAPIView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer

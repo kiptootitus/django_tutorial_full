@@ -1,5 +1,9 @@
 from django.db import models
+from django.dispatch import receiver
 from phonenumber_field.modelfields import PhoneNumberField  # If using 
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+
 
 class Address(models.Model):
     street = models.CharField(max_length=255, blank=True, null=True)
@@ -15,8 +19,8 @@ class Address(models.Model):
 class Profile(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
-    email = models.EmailField(max_length=255, blank=True, null=True)  # Changed to EmailField
-    phone = PhoneNumberField(blank=True, null=True)  # If using django-phonenumber-field
+    email = models.EmailField(max_length=255, blank=True, null=True, unique=True)  # Changed to EmailField
+    phone = PhoneNumberField(blank=True, null=True, unique=True)  # If using django-phonenumber-field
 
     def __str__(self):
         return self.name if self.name else "Unnamed Profile"
