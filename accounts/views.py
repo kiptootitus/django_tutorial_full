@@ -1,16 +1,18 @@
+from pyexpat.errors import messages
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views import View
 from rest_framework import generics
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from accounts.models import Profile
-from accounts.serializers import RegisterSerializer
+from accounts.serializers import RegisterSerializer, SigninSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate
-
+from django.contrib.auth import authenticate, login
+from django.contrib.auth import logout
+from django.views.decorators.http import require_POST
 
 
 def home(request):
@@ -49,9 +51,29 @@ class SignInAPIView(APIView):
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
-            # refresh = RefreshToken(refresh)
-            refresh = RefreshToken.for_user(user)  # Generate a new Refresh Token
+            refresh = RefreshToken.for_user(user) 
             access = str(refresh.access_token)
             return Response({"refresh": str(refresh), "access": access},status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        
+        
+def sign_in(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+          
+            return redirect('home')
+        else:
+            messages.error(request, 'Invalid username or password.')
+
+    return render(request, 'accounts/sign_in.html', {'title': 'Login'})
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')

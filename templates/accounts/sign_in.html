@@ -1,0 +1,43 @@
+{% extends "base.html" %} 
+{% load static %}
+
+{% block content %}
+<head>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <title>Login Page</title>
+</head>
+
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<form method="post" action="{% url 'login' %}">
+  {% csrf_token %}
+  <div class="form-group">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required />
+  </div>
+
+  <div class="form-group">
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required />
+  </div>
+
+  <input type="submit" class="btn btn-primary" value="Login" />
+</form>
+
+<br>
+
+<div class="row">
+  {% if user.is_authenticated %}
+    <center><h1>Welcome back, {{ user.username }}!</h1></center>
+  {% else %}
+    <center><h1>Please log in...</h1></center>
+  {% endif %}
+</div>
+
+{% endblock content %}

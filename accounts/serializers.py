@@ -1,7 +1,7 @@
 from . models import Flights, Profile
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from django.contrib.auth import validators
+from django.contrib.auth import authenticate
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -46,20 +46,19 @@ class FlightsSerializer(serializers.ModelSerializer):
         return super().save(**kwargs)
     
     
-class SigninSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['username', 'password']
-    
-    def validate_username(self, value):
-        """ Ensure username is unique """
-        if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError("This username is already taken.")
-        return value
+class SigninSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
 
-    def validate_email(self, value):
-        """ Ensure email is unique """
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("This email is already in use.")
-        return value    
+    def validate(self, data):
+        """ Authenticate user """
+        username = data.get("username")
+        password = data.get("password")
+
+        user = authenticate(username=username, password=password)
+        if not user:
+            raise serializers.ValidationError("Invalid credentials. Please try again.")
+
+        data["user"] = user  # Store authenticated user for use in views
+        return data
         

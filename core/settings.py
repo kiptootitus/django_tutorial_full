@@ -120,5 +120,5 @@ STATICFILES_FINDERS = [
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",  # Add your frontend URL
+    "http://localhost:8000", 
 ]
