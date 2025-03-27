@@ -49,10 +49,9 @@ class SignInAPIView(APIView):
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
-            refresh = RefreshToken(refresh)
-            return Response({
-                'refresh':str(refresh),
-                'access': str(refresh.access_token),
-                }, status=status.HTTP_200_OK)
+            # refresh = RefreshToken(refresh)
+            refresh = RefreshToken.for_user(user)  # Generate a new Refresh Token
+            access = str(refresh.access_token)
+            return Response({"refresh": str(refresh), "access": access},status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
