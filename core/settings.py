@@ -26,10 +26,12 @@ INSTALLED_APPS = [
     
     # thirdparty apps
     'phonenumber_field',
+    'corsheaders',
     'rest_framework',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -98,13 +100,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-STATIC_URL = 'static/'# URL prefix for serving static files
-
+# Static files settings
+STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # Store custom static files here
+    BASE_DIR / "static", 
 ]
-
 # STATIC_ROOT is not needed in development (used in production with collectstatic)
 STATIC_ROOT = BASE_DIR / 'staticfiles/'  # Or just remove this line
 
@@ -115,3 +115,6 @@ STATICFILES_FINDERS = [
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",  # Add your frontend URL
+]

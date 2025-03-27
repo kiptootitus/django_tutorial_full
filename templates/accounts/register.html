@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load static %}
+
+<html>
+  <head>
+    <link rel="stylesheet" href={% static 'css/style.css' %} />
+   
+     
+        <style>
+            .container { max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+            .form-group { margin-bottom: 15px; }
+            label { display: block; margin-bottom: 5px; }
+            input { width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 5px; }
+            .error { color: red; font-size: 0.8em; display: none; }
+            button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+            button:hover { background-color: #45a049; }
+        </style>
+    </head>
+
+  <body>
+    
+    {%block content %}
+ 
+    
+  
+
+        <div class="container">
+            <h2>Register</h2>
+            <form id="registrationForm" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                    <div class="error" id="username-error">This username is already taken.</div>
+                </div>
+    
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    <div class="error" id="email-error">This email is already in use.</div>
+                </div>
+    
+                <div class="form-group">
+                    <label for="first_name">First Name:</label>
+                    <input type="text" id="first_name" name="first_name">
+                </div>
+    
+                <div class="form-group">
+                    <label for="last_name">Last Name:</label>
+                    <input type="text" id="last_name" name="last_name">
+                </div>
+    
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+    
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    
+        <script>
+            document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+    
+                // Reset error messages
+                document.querySelectorAll('.error').forEach(error => error.style.display = 'none');
+    
+                const formData = {
+                    username: document.getElementById('username').value,
+                    email: document.getElementById('email').value,
+                    first_name: document.getElementById('first_name').value,
+                    last_name: document.getElementById('last_name').value,
+                    password: document.getElementById('password').value
+                };
+    
+                try {
+                    const response = await fetch('/api/register/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'  // Use Django's CSRF token
+                        },
+                        body: JSON.stringify(formData)
+                    });
+    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        if (errorData.username) {
+                            document.getElementById('username-error').textContent = errorData.username[0];
+                            document.getElementById('username-error').style.display = 'block';
+                        }
+                        if (errorData.email) {
+                            document.getElementById('email-error').textContent = errorData.email[0];
+                            document.getElementById('email-error').style.display = 'block';
+                        }
+                        throw new Error('Registration failed');
+                    }
+    
+                    const data = await response.json();
+                    alert('Registration successful!');
+                    // window.location.href = '/login/'; // Redirect if desired
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        </script>
+   {% endblock content %}
+  </body>
+</html>
+
+
+

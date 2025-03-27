@@ -31,3 +31,7 @@ class AccountsListView(ProfilesListView):
 class RegisterCreateAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
+    
+# New Template View for serving the HTML form
+def register_page(request):
+    return render(request, 'accounts/register.html')
