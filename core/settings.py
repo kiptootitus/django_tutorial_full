@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts.apps.AccountsConfig',
     'scripts',
+    'vendors.apps.VendorsConfig',
     
     # thirdparty apps
     'phonenumber_field',
