@@ -1,7 +1,7 @@
-from . models import Profile
+from . models import Flights, Profile
 from django.contrib.auth.models import User
 from rest_framework import serializers
-
+from django.contrib.auth import validators
 
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,3 +33,33 @@ class ProfileSerializer(serializers.ModelSerializer):
   class Meta:
     model = Profile
     fields = '__all__'
+
+class FlightsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Flights
+        fields = '__all__'
+        
+    def create(self, validated_data):
+        return super().create(validated_data)
+    
+    def save(self, **kwargs):
+        return super().save(**kwargs)
+    
+    
+class SigninSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'password']
+    
+    def validate_username(self, value):
+        """ Ensure username is unique """
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("This username is already taken.")
+        return value
+
+    def validate_email(self, value):
+        """ Ensure email is unique """
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email is already in use.")
+        return value    
+        

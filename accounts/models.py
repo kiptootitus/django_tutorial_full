@@ -24,3 +24,20 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.name if self.name else "Unnamed Profile"
+
+
+class Flights(models.Model):
+    airline = models.CharField(max_length=255, blank=False, null=False)
+    flight = models.CharField(max_length=255, blank=False, null=False)
+    source_city = models.CharField(max_length=255, blank=False, null=False)
+    departure_time = models.CharField(max_length=255, blank=False, null=False)
+    stops = models.CharField(max_length=255, blank=False, null=False)
+    arrival_time = models.CharField(max_length=255, blank=False, null=False)
+    destination_city = models.CharField(max_length=255, blank=False, null=False)
+    duration = models.FloatField(max_length=255, blank=False, null=False)
+    days_left = models.IntegerField(blank=False, null=False)
+    price = models.IntegerField(blank=False, null=False)
+    
+    def __str__(self):
+        return f"{self.airline}, {self.source_city}, {self.destination_city}, {self.price}"
+    

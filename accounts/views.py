@@ -3,10 +3,15 @@ from django.shortcuts import render
 from django.views import View
 from rest_framework import generics
 from django.contrib.auth.models import User
-
-
+from rest_framework.views import APIView
 from accounts.models import Profile
 from accounts.serializers import RegisterSerializer
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
+
+
 
 def home(request):
     return render(request, 'accounts/home.html')
@@ -35,3 +40,19 @@ class RegisterCreateAPIView(generics.CreateAPIView):
 # New Template View for serving the HTML form
 def register_page(request):
     return render(request, 'accounts/register.html')
+
+
+class SignInAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            refresh = RefreshToken(refresh)
+            return Response({
+                'refresh':str(refresh),
+                'access': str(refresh.access_token),
+                }, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
