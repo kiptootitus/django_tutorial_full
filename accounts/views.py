@@ -54,7 +54,7 @@ class ProfilesUpdateAPIView(LoginRequiredMixin, APIView):
         if form.is_valid():
             form.save()
             messages.success(request, "Profile updated successfully.")
-            return redirect(reverse('profiles_list'))  # Replace 'profiles_list' with your profiles list view name
+            return redirect(reverse('profiles_list'))  
         return render(request, 'accounts/profile_update.html', {'form': form, 'profile': profile})
 
 class RegisterCreateAPIView(generics.CreateAPIView):

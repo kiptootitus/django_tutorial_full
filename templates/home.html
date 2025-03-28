@@ -15,7 +15,7 @@
           Username: {{user.username}}
         </pre>
       {% else %}
-      <p> You are not logged in. </p>
+      <p> You are not logged in.  <a href="{% url 'login' %}" class="btn btn-primary">Login</a></p>
       {% endif %}
     {% endblock content %}
   </body>
