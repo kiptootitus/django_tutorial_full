@@ -26,8 +26,13 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """ Override create method to hash the password """
-        user = User.objects.create_user(**validated_data)  # Automatically hashes the password
+        user = User.objects.create_user(**validated_data)
         return user
+    
+    
+    def get_full_name(self, obj):
+        """ Get full name of the user """
+        return f"{obj.first_name} {obj.last_name}"
 
 class ProfileSerializer(serializers.ModelSerializer):
   class Meta:

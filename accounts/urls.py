@@ -8,7 +8,7 @@ urlpatterns = [
     path('api/register/', RegisterCreateAPIView.as_view(), name='register'),
     path('register/', register_page, name='register-page'),
     path('signin/', SignInAPIView.as_view(), name='signin'),
-    path('login/', sign_in, name='login'),
+    path('accounts/login/', sign_in, name='login'),
     path('logout/', logout_view, name='logout'),
 
 ]

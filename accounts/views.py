@@ -13,12 +13,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from django.views.decorators.http import require_POST
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 def home(request):
-    return render(request, 'accounts/home.html')
+    return render(request, 'home.html')
 
-class ProfilesListView(View):
+class ProfilesListView(LoginRequiredMixin,View):
     model = None  # Placeholder to be defined in subclasses
     
     def get(self, request):
@@ -45,6 +45,7 @@ def register_page(request):
 
 
 class SignInAPIView(APIView):
+    
     def post(self, request, *args, **kwargs):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -77,3 +78,4 @@ def sign_in(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+

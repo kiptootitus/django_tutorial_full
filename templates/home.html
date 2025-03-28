@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+<html>
+  <head>
+    <link rel="stylesheet" href="{% static '/css/style.css' %}" />
+  </head>
+  <body>
+    
+    {%block content %}
+    <h1> Welcome </h1>
+      {% if user.is_authenticated%}
+      <p>Authenticated as 
+        <pre>
+          Name: {{user.first_name}} {{user.last_name}}
+          Username: {{user.username}}
+        </pre>
+      {% else %}
+      <p> You are not logged in. </p>
+      {% endif %}
+    {% endblock content %}
+  </body>
+</html>
