@@ -21,7 +21,7 @@ from accounts.forms import ProfileForm  # Assuming you have a ProfileForm for th
 def home(request):
     return render(request, 'home.html')
 
-class ProfilesListView(LoginRequiredMixin,View):
+class ProfilesListAPIView(LoginRequiredMixin,APIView):
     model = None  # Placeholder to be defined in subclasses
     
     def get(self, request):
@@ -34,12 +34,12 @@ class ProfilesListView(LoginRequiredMixin,View):
         
         return render(request, f'accounts/{modelname}_list.html', context)
 
-class AccountsListView(ProfilesListView):
+class AccountsListAPIView(ProfilesListAPIView):
     model = Profile
 
 
 
-class ProfilesUpdateView(LoginRequiredMixin, View):
+class ProfilesUpdateAPIView(LoginRequiredMixin, APIView):
     model = Profile
     form_class = ProfileForm
 
@@ -70,7 +70,8 @@ def register_page(request):
 
 
 class SignInAPIView(APIView):
-    
+    queryset = User.objects.all()
+    serializer_class = SigninSerializer
     def post(self, request, *args, **kwargs):
         username = request.data.get('username')
         password = request.data.get('password')

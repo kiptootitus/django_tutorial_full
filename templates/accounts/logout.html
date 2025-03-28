@@ -7,7 +7,7 @@
   <body>
     
     {%block content %}
-    <form method="post" action="/logout/">
+    <form method="post" action="api/accounts/logout/">
       {% csrf_token %}
       <button type="submit">Logout</button>
   </form>
