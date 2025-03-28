@@ -70,8 +70,7 @@ def register_page(request):
 
 
 class SignInAPIView(APIView):
-    queryset = User.objects.all()
-    serializer_class = SigninSerializer
+   
     def post(self, request, *args, **kwargs):
         username = request.data.get('username')
         password = request.data.get('password')

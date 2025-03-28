@@ -3,10 +3,16 @@
 {% block content %}
   <nav style="background-color: red;">
       <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="profiles/">Profiles</a></li>
-        <li><a href="/services/">Services</a></li>
-        <li><a href="/contact/">Contact</a></li>
+        <li><a href="/api/accounts/home/">Home</a></li>
+        <li><a href="/api/accounts/profiles/">Profiles</a></li>
+        {% if user.is_authenticated %}
+          <li><a href="/api/accounts/logout/">Logout</a></li>
+        {% else %}
+          <li><a href="/api/accounts/login/">Signin</a></li>
+          <li><a href="/api/accounts/signup/">Register</a></li>
+
+          
+        {% endif %}
       </ul>
     </nav>
-    {% endblock %}
+{% endblock %}
