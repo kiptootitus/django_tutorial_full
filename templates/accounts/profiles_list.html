@@ -5,6 +5,7 @@
     <h1>Welcome</h1>
     {% for profile in profiles %}
         <p>{{ profile }}</p>
+        <a href="{% url 'profile_update' profile.id %}" class="btn btn-primary">Update</a>
     {% empty %}
         <p>No profiles available.</p>
     {% endfor %}
