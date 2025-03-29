@@ -44,13 +44,13 @@ class ProfilesUpdateAPIView(APIView):
     model = Profile
     form_class = ProfileForm
     
-    @method_decorator(login_required)
+    #@method_decorator(login_required)
     def get(self, request, pk):
         profile = get_object_or_404(self.model, pk=pk)
         form = self.form_class(instance=profile)
         return render(request, 'accounts/profile_update.html', {'form': form, 'profile': profile})
     
-    @method_decorator(login_required)
+    #@method_decorator(login_required)
     def post(self, request, pk):
         profile = get_object_or_404(self.model, pk=pk)
         form = self.form_class(request.POST, instance=profile)
@@ -82,6 +82,7 @@ class SignInAPIView(APIView):
         if user is not None:
             refresh = RefreshToken.for_user(user) 
             access = str(refresh.access_token)
+            print(access)
             return Response({"refresh": str(refresh), "access": access},status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -96,7 +97,9 @@ def sign_in(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-          
+            refresh = RefreshToken.for_user(user) 
+            access = str(refresh.access_token)
+            print(access)
             return redirect('home')
         else:
             messages.error(request, 'Invalid username or password.')

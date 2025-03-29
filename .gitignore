@@ -22,3 +22,20 @@ env/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Ignore the api.http file
+api.http
+
+# Ignore virtual environments
+venv/
+.env/
+*.env
+
+# Ignore datasets
+datasets/
+*.csv
+*.json
+
+# Ignore database files
+*.sqlite3
+db.sqlite3
