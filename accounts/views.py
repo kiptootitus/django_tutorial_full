@@ -12,8 +12,9 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
-from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.contrib import messages
 from accounts.forms import ProfileForm  # Assuming you have a ProfileForm for the Profile model
@@ -39,15 +40,17 @@ class AccountsListAPIView(ProfilesListAPIView):
 
 
 
-class ProfilesUpdateAPIView(LoginRequiredMixin, APIView):
+class ProfilesUpdateAPIView(APIView):
     model = Profile
     form_class = ProfileForm
-
+    
+    @method_decorator(login_required)
     def get(self, request, pk):
         profile = get_object_or_404(self.model, pk=pk)
         form = self.form_class(instance=profile)
         return render(request, 'accounts/profile_update.html', {'form': form, 'profile': profile})
-
+    
+    @method_decorator(login_required)
     def post(self, request, pk):
         profile = get_object_or_404(self.model, pk=pk)
         form = self.form_class(request.POST, instance=profile)

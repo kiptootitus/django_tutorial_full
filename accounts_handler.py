@@ -1,13 +1,12 @@
 from django.contrib.auth.models import User
-from asgiref.sync import sync_to_async
 
-from accounts.models import AccountsManager, Address
+from accounts.models import AccountManager, Address
 
 
 class AccountsHandler:
 
     def __init__(self, accounts_manager=None):
-      self.accounts_manager = accounts_manager or AccountsManager()
+      self.accounts_manager = accounts_manager or AccountManager()
 
     from django.db.models.query import QuerySet
 
@@ -29,9 +28,7 @@ class AccountsHandler:
         :return: User
         """
         return self.accounts_manager.create_update_vendor(data)
-    @sync_to_async
-    def async_generate_otp_for_email(self, email):
-      return self.generate_otp_for_email(email)
+    
     def generate_otp_for_email(self, email):
         """
         This method generates an OTP for the phone number, sets it to cache and returns it

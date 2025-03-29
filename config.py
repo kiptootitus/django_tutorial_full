@@ -10,3 +10,11 @@ ROLE_CHOICES = [
 ]
 
 
+FREE = 'Free'
+BASIC = 'Basic'
+PREMIUM  = 'Premium'
+PLAN_CHOICES = [
+        ("free", "Free"),
+        ("basic", "Basic"),
+        ("premium", "Premium"),
+    ]
