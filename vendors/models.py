@@ -63,7 +63,7 @@ class VendorReview(models.Model):
         related_name="profile",
         null=True,
         blank=True,
-        default=get_default_user  # Will now return an ID or None
+        default=get_default_user
     )
     rating = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1, 6)],validators=[MinValueValidator(1), MaxValueValidator(5)])
     review = models.TextField(blank=True, null=True)

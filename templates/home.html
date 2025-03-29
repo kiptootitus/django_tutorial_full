@@ -17,6 +17,28 @@
       {% else %}
       <p> You are not logged in.  <a href="{% url 'login' %}" class="btn btn-primary">Login</a></p>
       {% endif %}
+    
+    <h1>Flights</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Airline</th>
+                <th>Average Price</th>
+                <th>Average Duration</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for avg in averages %}
+            <tr>
+                <td>{{ avg.airline }}</td>
+                <td>{{ avg.avg_price }}</td>
+                <td>{{ avg.avg_duration }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+  
     {% endblock content %}
   </body>
 </html>

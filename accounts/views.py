@@ -10,7 +10,7 @@ from accounts.serializers import ProfileSerializer, RegisterSerializer, SigninSe
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate, login,logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
@@ -19,13 +19,28 @@ from rest_framework.decorators import api_view
 from django.urls import reverse
 from django.contrib import messages
 from accounts.forms import ProfileForm
+from django.db.models import Avg
+from .models import Flights  # Assuming the Flight model is in the flights app
 
 def home(request):
-    return render(request, 'home.html')
+    # Query all flights
+    airline = Flights.objects.all()
 
-class ProfilesListAPIView(LoginRequiredMixin,APIView):
+    # Calculate average price and duration per airline
+    averages = Flights.objects.values('airline').annotate(
+        avg_price=Avg('price'),
+        avg_duration=Avg('duration')
+    )
+
+    # Pass the data to the template
+    context = {
+        'airline': airline,
+        'averages': averages,
+    }
+    return render(request, 'home.html', context)
+
+class ProfilesListAPIView(LoginRequiredMixin, APIView):
     serializer_class = ProfileSerializer
-    
 
     def get_queryset(self):
         return Profile.objects.order_by('pk')  # Always fetch fresh data
@@ -54,7 +69,7 @@ class ProfilesUpdateAPIView(APIView):
         profile = get_object_or_404(self.model, pk=pk)
         form = self.form_class(instance=profile)
         return render(request, 'accounts/profile_update.html', {'form': form, 'profile': profile})
-    
+
     @method_decorator(login_required)
     def post(self, request, pk):
         profile = get_object_or_404(Profile, pk=pk)
@@ -62,13 +77,12 @@ class ProfilesUpdateAPIView(APIView):
         if form.is_valid():
             form.save()
             messages.success(request, "Profile updated successfully.")
-            return redirect(reverse('profiles_list'))  
+            return redirect(reverse('profiles_list'))
         return render(request, 'accounts/profile_update.html', {'form': form, 'profile': profile})
 
 class RegisterCreateAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
-    
 
 
 @api_view(['POST'])
@@ -81,24 +95,25 @@ def register_page(request):
             "user": serializer.data
         }, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class SignInAPIView(APIView):
-   
+
     def post(self, request, *args, **kwargs):
         username = request.data.get('username')
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
-        
+
         if user is not None:
-            refresh = RefreshToken.for_user(user) 
+            refresh = RefreshToken.for_user(user)
             access = str(refresh.access_token)
             print(access)
-            return Response({"refresh": str(refresh), "access": access},status=status.HTTP_200_OK)
+            return Response({"refresh": str(refresh), "access": access}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-        
+
     def success(request):
         return HttpResponse('Login sucess')
-        
+
 def sign_in(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -107,7 +122,7 @@ def sign_in(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            refresh = RefreshToken.for_user(user) 
+            refresh = RefreshToken.for_user(user)
             access = str(refresh.access_token)
             print(access)
             return redirect('home')
