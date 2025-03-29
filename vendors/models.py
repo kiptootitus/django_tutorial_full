@@ -57,3 +57,4 @@ class VendorReview(models.Model):
 
     def __str__(self):
         return f"Review for {self.vendor.store_name} by {self.user.username}"
+    

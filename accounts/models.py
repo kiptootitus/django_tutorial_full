@@ -2,15 +2,14 @@ from django.db import models
 from django.dispatch import receiver
 from phonenumber_field.modelfields import PhoneNumberField  # If using 
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
 from config import ROLE_CHOICES
 
 
 class Address(models.Model):
-    street = models.CharField(max_length=255, blank=True, null=True)
-    city = models.CharField(max_length=255, blank=True, null=True)
-    zip_code = models.CharField(max_length=255, blank=True, null=True)
-    state = models.CharField(max_length=255, blank=True, null=True)
+    street = models.CharField(max_length=25,blank=False, null=False, default='')
+    city = models.CharField(max_length=25, blank=False, null=False, default='')
+    zip_code = models.CharField(max_length=25, blank=False, null=False,default='')
+    state = models.CharField(max_length=25, blank=False, null=False, default='')
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
     
@@ -23,10 +22,10 @@ class Address(models.Model):
         return f"{self.street}, {self.city}, {self.zip_code}, {self.state}"
 
 class Profile(models.Model):
-    first_name = models.CharField(max_length=255, blank=True, null=True)
-    last_name = models.CharField(max_length=255, blank=True, null=True)
+    first_name = models.CharField(max_length=50, blank=False, null=False, default='')
+    last_name = models.CharField(max_length=50, blank=False, null=False, default='')
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
-    email = models.EmailField(max_length=255, blank=False, null=False, unique=True, default='email') 
+    email = models.EmailField(max_length=50, blank=False, null=False, unique=True, default='email') 
     phone = PhoneNumberField(blank=False, null=False, unique=True, default='phone')
 
     def __str__(self):
@@ -54,6 +53,7 @@ class AccountManager(models.Model):
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='CUSTOMER')
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.role} - {self.address}"
