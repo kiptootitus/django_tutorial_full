@@ -1,129 +1,121 @@
 {% extends "base.html" %}
 {% load static %}
 
-<html>
-  <head>
-    <link rel="stylesheet" href={% static 'css/style.css' %} />
-   
-    <style>
-        .container { max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
-        input { width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 5px; }
-        .error { color: red; font-size: 0.8em; display: none; }
-        button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #45a049; }
-    </style>
-  </head>
+{% block content %}
+<div class="container">
+    <h2>Register</h2>
+    <form id="registrationForm" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <div id="username-error" class="error"></div>
+        </div>
 
-  <body>
-    {% block content %}
-    <div class="container">
-        <h2>Register</h2>
-        <form id="registrationForm" method="POST">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
-                <div id="username-error" class="error"></div>
-            </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <div id="email-error" class="error"></div>
+        </div>
 
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-                <div id="email-error" class="error"></div>
-            </div>
+        <div class="form-group">
+            <label for="first_name">First Name:</label>
+            <input type="text" id="first_name" name="first_name">
+        </div>
 
-            <div class="form-group">
-                <label for="first_name">First Name:</label>
-                <input type="text" id="first_name" name="first_name">
-            </div>
+        <div class="form-group">
+            <label for="last_name">Last Name:</label>
+            <input type="text" id="last_name" name="last_name">
+        </div>
 
-            <div class="form-group">
-                <label for="last_name">Last Name:</label>
-                <input type="text" id="last_name" name="last_name">
-            </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <div id="password-error" class="error"></div>
+        </div>
 
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-                <div id="password-error" class="error"></div>
-            </div>
+        <div class="form-group">
+            <label for="confirm_password">Confirm Password:</label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
+            <div id="confirm-password-error" class="error"></div>
+        </div>
 
-            <div class="form-group">
-                <label for="confirm_password">Confirm Password:</label>
-                <input type="password" id="confirm_password" name="confirm_password" required>
-                <div id="confirm-password-error" class="error"></div>
-            </div>
+        <button type="submit">Register</button>
+    </form>
+</div>
 
-            <button type="submit">Register</button>
-        </form>
-    </div>
+<style>
+    .container { max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; }
+    input { width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 5px; }
+    .error { color: red; font-size: 0.8em; }
+    button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background-color: #45a049; }
+</style>
 
-    <script>
-        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+<script>
+    document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
 
-            // Reset error messages
-            document.querySelectorAll('.error').forEach(error => {
-                error.style.display = 'none';
-                error.textContent = '';
+        // Reset error messages
+        document.querySelectorAll('.error').forEach(error => {
+            error.style.display = 'none';
+            error.textContent = '';
+        });
+
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+
+        // Check if passwords match
+        if (password !== confirmPassword) {
+            const confirmError = document.getElementById('confirm-password-error');
+            confirmError.textContent = "Passwords don't match";
+            confirmError.style.display = 'block';
+            return;
+        }
+
+        const formData = {
+            username: document.getElementById('username').value,
+            email: document.getElementById('email').value,
+            first_name: document.getElementById('first_name').value,
+            last_name: document.getElementById('last_name').value,
+            password: password
+        };
+
+        try {
+            const response = await fetch('/api/accounts/signup/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(formData)
             });
 
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm_password').value;
-
-            // Check if passwords match
-            if (password !== confirmPassword) {
-                const confirmError = document.getElementById('confirm-password-error');
-                confirmError.textContent = "Passwords don't match";
-                confirmError.style.display = 'block';
-                return;
-            }
-
-            const formData = {
-                username: document.getElementById('username').value,
-                email: document.getElementById('email').value,
-                first_name: document.getElementById('first_name').value,
-                last_name: document.getElementById('last_name').value,
-                password: password
-            };
-
-            try {
-                const response = await fetch('/api/accounts/signup/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    if (errorData.username) {
-                        document.getElementById('username-error').textContent = errorData.username[0];
-                        document.getElementById('username-error').style.display = 'block';
-                    }
-                    if (errorData.email) {
-                        document.getElementById('email-error').textContent = errorData.email[0];
-                        document.getElementById('email-error').style.display = 'block';
-                    }
-                    if (errorData.password) {
-                        document.getElementById('password-error').textContent = errorData.password[0];
-                        document.getElementById('password-error').style.display = 'block';
-                    }
-                    throw new Error('Registration failed');
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (errorData.username) {
+                    document.getElementById('username-error').textContent = errorData.username[0];
+                    document.getElementById('username-error').style.display = 'block';
                 }
-
-                const data = await response.json();
-                alert('Registration successful!');
-                // window.location.href = '/login/';
-            } catch (error) {
-                console.error('Error:', error);
+                if (errorData.email) {
+                    document.getElementById('email-error').textContent = errorData.email[0];
+                    document.getElementById('email-error').style.display = 'block';
+                }
+                if (errorData.password) {
+                    document.getElementById('password-error').textContent = errorData.password[0];
+                    document.getElementById('password-error').style.display = 'block';
+                }
+                throw new Error('Registration failed');
             }
-        });
-    </script>
-    {% endblock content %}
-  </body>
-</html>
+
+            const data = await response.json();
+            alert('Registration successful!');
+            window.location.href = '/profiles/';  
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+</script>
+{% endblock content %}

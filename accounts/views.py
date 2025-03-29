@@ -15,7 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-
+from rest_framework.decorators import api_view
 from django.urls import reverse
 from django.contrib import messages
 from accounts.forms import ProfileForm
@@ -57,7 +57,7 @@ class ProfilesUpdateAPIView(APIView):
     
     @method_decorator(login_required)
     def post(self, request, pk):
-        profile = get_object_or_404(self.model, pk=pk)
+        profile = get_object_or_404(Profile, pk=pk)
         form = self.form_class(request.POST, instance=profile)
         if form.is_valid():
             form.save()
@@ -66,17 +66,21 @@ class ProfilesUpdateAPIView(APIView):
         return render(request, 'accounts/profile_update.html', {'form': form, 'profile': profile})
 
 class RegisterCreateAPIView(generics.CreateAPIView):
-    
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     
 
 
-
+@api_view(['POST'])
 def register_page(request):
-    return render(request, 'accounts/register.html')
-
-
+    serializer = RegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({
+            "message": "Profile created successfully",
+            "user": serializer.data
+        }, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class SignInAPIView(APIView):
    
     def post(self, request, *args, **kwargs):

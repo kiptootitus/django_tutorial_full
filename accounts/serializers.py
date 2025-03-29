@@ -15,13 +15,13 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate_username(self, value):
         """ Ensure username is unique """
         if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError("This username is already taken.")
+            raise serializers.ValidationError(f"This username {value.username} is already taken.")
         return value
 
     def validate_email(self, value):
         """ Ensure email is unique """
         if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("This email is already in use.")
+            raise serializers.ValidationError(f"This email {value} is already in use.")
         return value
 
     def create(self, validated_data):
