@@ -6,51 +6,56 @@ from rest_framework import generics
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from accounts.models import Profile
-from accounts.serializers import RegisterSerializer, SigninSerializer
+from accounts.serializers import ProfileSerializer, RegisterSerializer, SigninSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate, login
-from django.contrib.auth import logout
+from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+
 from django.urls import reverse
 from django.contrib import messages
-from accounts.forms import ProfileForm  # Assuming you have a ProfileForm for the Profile model
+from accounts.forms import ProfileForm
 
 def home(request):
     return render(request, 'home.html')
 
 class ProfilesListAPIView(LoginRequiredMixin,APIView):
-    model = None  # Placeholder to be defined in subclasses
+    serializer_class = ProfileSerializer
     
+
+    def get_queryset(self):
+        return Profile.objects.order_by('pk')  # Always fetch fresh data
+
+    @method_decorator(cache_page(60 * 5))  # Cache the response for 5 minutes
     def get(self, request):
-        if not self.model:
-            return HttpResponse("Model not defined.", status=500)
-        
-        modelname = self.model._meta.verbose_name_plural.lower()
-        profiles = self.model.objects.all()
-        context = {modelname: profiles}
-        
-        return render(request, f'accounts/{modelname}_list.html', context)
+        profiles = self.get_queryset()  # Use get_queryset() to fetch profiles
+        serializer = self.serializer_class(profiles, many=True)  # Serialize the queryset
+        return Response(serializer.data, status=status.HTTP_200_OK)  # Return a DRF Response
 
-class AccountsListAPIView(ProfilesListAPIView):
-    model = Profile
+class ProfileDetailAPIView(LoginRequiredMixin, APIView):
+    serializer_class = ProfileSerializer
 
+    def get(self, request, pk):
+        profile = get_object_or_404(Profile, pk=pk)  # Fetch the profile by pk
+        serializer = self.serializer_class(profile)  # Serialize the profile
+        return Response(serializer.data, status=status.HTTP_200_OK)  # Return a DRF Response
 
 
 class ProfilesUpdateAPIView(APIView):
     model = Profile
     form_class = ProfileForm
-    
-    #@method_decorator(login_required)
+
+    @method_decorator(login_required)
     def get(self, request, pk):
         profile = get_object_or_404(self.model, pk=pk)
         form = self.form_class(instance=profile)
         return render(request, 'accounts/profile_update.html', {'form': form, 'profile': profile})
     
-    #@method_decorator(login_required)
+    @method_decorator(login_required)
     def post(self, request, pk):
         profile = get_object_or_404(self.model, pk=pk)
         form = self.form_class(request.POST, instance=profile)
@@ -87,7 +92,8 @@ class SignInAPIView(APIView):
         else:
             return Response({'error': 'Invalid Credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         
-        
+    def success(request):
+        return HttpResponse('Login sucess')
         
 def sign_in(request):
     if request.method == 'POST':

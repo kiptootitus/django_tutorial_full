@@ -6,11 +6,11 @@ from functools import wraps
 from config import PLAN_CHOICES
 # Create your models here.
 
-class Vendor(models.Model, AccountsHandler):  # Swap the order
+class Vendor(models.Model, AccountsHandler): 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    description = models.TextField(max_length=255, blank=False, null=False)
-    vendor_email = models.EmailField()
-    seller_name = models.CharField(max_length=255, blank=False, null=False)
+    description = models.TextField(max_length=50, blank=False, null=False)
+    vendor_email = models.EmailField(null=False, blank=False, default='')
+    seller_name = models.CharField(max_length=50, blank=False, null=False)
     store_name = models.CharField(max_length=255, blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
@@ -18,6 +18,7 @@ class Vendor(models.Model, AccountsHandler):  # Swap the order
 
     class Meta:
         ordering = ['seller_name']
+        unique_together = ['user', 'description', 'vendor_email', 'seller_name', 'store_name']
 
     def __str__(self):
         return self.store_name
@@ -38,9 +39,11 @@ class VendorBankDetail(models.Model):
     vendor = models.OneToOneField(Vendor, on_delete=models.CASCADE)
     bank_name = models.CharField(max_length=255)
     account_number = models.CharField(max_length=50)
-    ifsc_code = models.CharField(max_length=50)  # For India, can change to SWIFT/BIC for international
+    swift_code = models.CharField(max_length=50)  
     is_verified = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ['vendor', 'bank_name','account_number', 'swift_code']
     def __str__(self):
         return f"{self.vendor.store_name} - {self.bank_name}"
 

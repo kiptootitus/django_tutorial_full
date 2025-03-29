@@ -16,6 +16,8 @@ class Address(models.Model):
     
     class Meta:
         ordering = ['state']
+        unique_together = ('street', 'city', 'state', 'zip_code')
+
         
     def __str__(self):
         return f"{self.street}, {self.city}, {self.zip_code}, {self.state}"
@@ -24,8 +26,8 @@ class Profile(models.Model):
     first_name = models.CharField(max_length=255, blank=True, null=True)
     last_name = models.CharField(max_length=255, blank=True, null=True)
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
-    email = models.EmailField(max_length=255, blank=True, null=True, unique=True) 
-    phone = PhoneNumberField(blank=True, null=True, unique=True)
+    email = models.EmailField(max_length=255, blank=False, null=False, unique=True, default='email') 
+    phone = PhoneNumberField(blank=False, null=False, unique=True, default='phone')
 
     def __str__(self):
         return f"{self.first_name}, {self.last_name}, {self.email}, {self.phone}"

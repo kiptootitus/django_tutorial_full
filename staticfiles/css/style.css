@@ -1,9 +1,9 @@
-.nav {
+nav {
   background-color: #333;
   padding: 10px 0;
 }
 
-.nav ul {
+nav ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -25,3 +25,40 @@ nav ul li a {
 nav ul li a:hover {
   color: #ff9800;
 }
+
+    .container {
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+        margin-bottom: 5px;
+    }
+    .error {
+        color: red;
+        font-size: 0.8em;
+        display: none;
+    }
+    button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
