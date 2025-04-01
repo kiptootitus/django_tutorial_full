@@ -4,8 +4,10 @@
   <nav style="background-color: red;">
       <ul>
         <li><a href="/api/accounts/home/">Home</a></li>
-        <li><a href="/api/accounts/profiles/">Profiles</a></li>
+
         {% if user.is_authenticated %}
+            <li><a href="/api/accounts/profiles/">Profiles</a></li>
+            <li><a href="/api/accounts/profile/update/">Profiles Update</a></li>
           <li><a href="/api/accounts/logout/">Logout</a></li>
         {% else %}
           <li><a href="/api/accounts/login/">Signin</a></li>

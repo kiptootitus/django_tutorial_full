@@ -1,6 +1,7 @@
 from django.urls import path
 
-from .views import RegisterCreateAPIView, SignInAPIView, home, ProfilesListAPIView, logout_view, register_page, sign_in, ProfilesUpdateAPIView
+from .views import RegisterCreateAPIView, SignInAPIView, home, ProfilesListAPIView, logout_view, register_page, sign_in, \
+    ProfilesUpdateAPIView, ProfileDetailAPIView
 
 urlpatterns = [
     path('home/', home, name="home"),
@@ -10,6 +11,6 @@ urlpatterns = [
     path('signin/', SignInAPIView.as_view(), name='signin'),
     path('login/', sign_in, name='login'),
     path('logout/', logout_view, name='logout'),
-    path('profiles/update/<int:pk>/', ProfilesUpdateAPIView.as_view(), name='profile_update'),
+    path('profile/update/<int:pk>/', ProfilesUpdateAPIView.as_view(), name='profile_update'),
+    path('detail/<int:pk>/', ProfileDetailAPIView.as_view(), name='profile_detail'),
 ]
-

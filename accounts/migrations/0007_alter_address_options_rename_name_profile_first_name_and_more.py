@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('accounts', '0006_rename_source_flights_source_city'),
     ]
@@ -29,7 +28,8 @@ class Migration(migrations.Migration):
             name='AccountManager',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('role', models.CharField(choices=[('VENDOR', 'Vendor'), ('CUSTOMER', 'Customer'), ('STAFF', 'Staff')], default='CUSTOMER', max_length=20)),
+                ('role', models.CharField(choices=[('VENDOR', 'Vendor'), ('CUSTOMER', 'Customer'), ('STAFF', 'Staff')],
+                                          default='CUSTOMER', max_length=20)),
                 ('address', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='accounts.address')),
                 ('profile', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='accounts.profile')),
             ],

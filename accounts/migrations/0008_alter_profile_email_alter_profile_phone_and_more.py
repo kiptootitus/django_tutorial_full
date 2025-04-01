@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('accounts', '0007_alter_address_options_rename_name_profile_first_name_and_more'),
     ]
@@ -19,7 +18,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='profile',
             name='phone',
-            field=phonenumber_field.modelfields.PhoneNumberField(default='phone', max_length=128, region=None, unique=True),
+            field=phonenumber_field.modelfields.PhoneNumberField(default='phone', max_length=128, region=None,
+                                                                 unique=True),
         ),
         migrations.AlterUniqueTogether(
             name='address',

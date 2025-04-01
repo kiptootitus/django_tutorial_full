@@ -1,26 +1,29 @@
 from pyexpat.errors import messages
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
-from django.views import View
-from rest_framework import generics
-from django.contrib.auth.models import User
-from rest_framework.views import APIView
-from accounts.models import Profile
-from accounts.serializers import ProfileSerializer, RegisterSerializer, SigninSerializer
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
+
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
+from django.db.models import Avg
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from rest_framework import generics
+from rest_framework import status
 from rest_framework.decorators import api_view
-from django.urls import reverse
-from django.contrib import messages
+from rest_framework.generics import RetrieveAPIView
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from accounts.forms import ProfileForm
-from django.db.models import Avg
+from accounts.models import Profile
+from accounts.serializers import ProfileSerializer, RegisterSerializer
 from .models import Flights  # Assuming the Flight model is in the flights app
+
 
 def home(request):
     # Query all flights
@@ -39,7 +42,8 @@ def home(request):
     }
     return render(request, 'home.html', context)
 
-class ProfilesListAPIView(LoginRequiredMixin, APIView):
+
+class ProfilesListAPIView(generics.RetrieveAPIView):
     serializer_class = ProfileSerializer
 
     def get_queryset(self):
@@ -51,34 +55,30 @@ class ProfilesListAPIView(LoginRequiredMixin, APIView):
         serializer = self.serializer_class(profiles, many=True)  # Serialize the queryset
         return Response(serializer.data, status=status.HTTP_200_OK)  # Return a DRF Response
 
-class ProfileDetailAPIView(LoginRequiredMixin, APIView):
+
+class ProfileDetailAPIView(LoginRequiredMixin,generics.RetrieveAPIView):
+    queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
 
-    def get(self, request, pk):
-        profile = get_object_or_404(Profile, pk=pk)  # Fetch the profile by pk
-        serializer = self.serializer_class(profile)  # Serialize the profile
-        return Response(serializer.data, status=status.HTTP_200_OK)  # Return a DRF Response
 
-
-class ProfilesUpdateAPIView(APIView):
+class ProfilesUpdateAPIView(generics.RetrieveUpdateDestroyAPIView):
     model = Profile
     form_class = ProfileForm
 
-    @method_decorator(login_required)
     def get(self, request, pk):
         profile = get_object_or_404(self.model, pk=pk)
         form = self.form_class(instance=profile)
         return render(request, 'accounts/profile_update.html', {'form': form, 'profile': profile})
 
-    @method_decorator(login_required)
     def post(self, request, pk):
         profile = get_object_or_404(Profile, pk=pk)
         form = self.form_class(request.POST, instance=profile)
         if form.is_valid():
             form.save()
             messages.success(request, "Profile updated successfully.")
-            return redirect(reverse('profiles_list'))
+            return redirect(reverse('home'))
         return render(request, 'accounts/profile_update.html', {'form': form, 'profile': profile})
+
 
 class RegisterCreateAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -95,6 +95,7 @@ def register_page(request):
             "user": serializer.data
         }, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class SignInAPIView(APIView):
 
@@ -114,6 +115,7 @@ class SignInAPIView(APIView):
     def success(request):
         return HttpResponse('Login sucess')
 
+
 def sign_in(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -131,7 +133,7 @@ def sign_in(request):
 
     return render(request, 'accounts/sign_in.html', {'title': 'Login'})
 
+
 def logout_view(request):
     logout(request)
     return redirect('login')
-

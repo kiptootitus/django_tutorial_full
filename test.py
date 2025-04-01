@@ -71,3 +71,79 @@ course.add_student(student3)  # This will not be added, as max_students is 2
 print(course.get_course_name())  # Output: Math
 print(course.get_max_students())  # Output: 2
 print (course.get_average_grade())
+
+
+
+
+class Pet:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def speak(self):
+        return("Woof!")
+
+    def speak(self):
+        return("Meow!")
+
+class Dog(Pet):
+    def __init__(self, name, age):
+        super().__init__(name, age)
+
+    def speak(self):
+        return "Woof!"
+
+class Cat(Pet):
+    def __init__(self, name, age):
+        super().__init__(name, age)
+
+    def speak(self):
+        return "Meow!"
+
+cat1 = Cat("Whiskers", 3)
+cat2 = Cat("Mittens", 5)
+dog1 = Dog("Buddy", 2)
+dog2 = Dog("Max", 4)
+
+print(cat1.speak())  # Output: Meow!
+print(cat2.speak())  # Output: Meow!
+print(dog1.speak())  # Output: Woof!
+
+
+class Breed(Pet):
+    def __init__(self, name, age):
+        super().__init__(name, age)
+
+    @classmethod
+    def get_name(cls):
+        return cls.name
+    @classmethod
+    def get_age(cls):
+        return cls.age
+    @classmethod
+    def get_breed(cls):
+        return cls.breed
+    @classmethod
+    def get_color(cls):
+        return cls.color
+
+class Dog(Breed):
+    def __init__(self, name, age, breed, color):
+        super().__init__(name, age)
+        self.breed = breed
+        self.color = color
+
+    def get_name(self):
+        return self.name
+    def get_age(self):
+        return self.age
+    def get_breed(self):
+        return self.breed
+    def get_color(self):
+        return self.color
+dog1 = Dog("Buddy", 3, "Golden Retriever", "Yellow")
+dog2 = Dog("Max", 5, "Bulldog", "Brown")
+print(dog1.get_name())  # Output: Buddy
+print(dog2.get_age())   # Output: 5
+print(dog1.get_breed()) # Output: Golden Retriever
+print(dog2.get_color()) # Output: Brown
