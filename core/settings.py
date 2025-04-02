@@ -144,3 +144,10 @@ CACHES = {
         'KEY_PREFIX': 'profiles_list'  
     }
 }
+
+# Media files settings
+MEDIA_URL = '/media/'  # URL to access media files
+MEDIA_ROOT = BASE_DIR / 'media' 
+
+if not MEDIA_ROOT.exists():
+    MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
