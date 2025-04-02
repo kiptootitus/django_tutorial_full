@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'scripts',
     'vendors.apps.VendorsConfig',
+    'product.apps.ProductConfig',
     
     # thirdparty apps
     'phonenumber_field',
