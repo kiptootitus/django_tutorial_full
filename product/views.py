@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404, redirect
 from rest_framework import generics
 from product.models import Product
 from product.serializers import ProductSerializer
-from rest_framework import status
+from rest_framework import permissions, authentication,status
 
 from rest_framework.response import Response
 
@@ -21,6 +21,9 @@ class ProductListAPIView(generics.ListAPIView):
     """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
 
     def get_queryset(self):
         return Product.objects.all()  # Fetch all products
@@ -36,6 +39,8 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     @method_decorator(cache_page(60 * 5))  # Cache the response for 5 minutes
     def get(self, request, *args, **kwargs):

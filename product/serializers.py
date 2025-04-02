@@ -1,6 +1,6 @@
 from django.db import models
 from rest_framework import serializers
-from .models import Product, ProductReview
+from .models import Product, ProductReview, ProductCategory
 from config import PRODUCT_TYPES
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
@@ -11,6 +11,30 @@ from django.core.files.storage import default_storage
 
 
 
+class ProductCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductCategory
+        fields = '__all__'
+        extra_kwargs = {
+            'created_at': {'read_only': True},
+            'updated_at': {'read_only': True},
+        }
+    def validate_name(self, value):
+        if not value:
+            raise serializers.ValidationError(_("Category name cannot be empty."))
+        return value
+    def validate_description(self, value):
+        if not value:
+            raise serializers.ValidationError(_("Category description cannot be empty."))
+        return value
+    def create(self, validated_data):
+        category = ProductCategory.objects.create(**validated_data)
+        return category
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.description = validated_data.get('description', instance.description)
+        instance.save()
+        return instance
 
 class ProductReviewSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,12 +88,18 @@ class ProductSerializer(serializers.ModelSerializer):
         if value < 0:
             raise serializers.ValidationError(_("Stock cannot be negative."))
         return value
-  
+    def validate_category(self, value):
+        if not value:
+            raise serializers.ValidationError(_("Category cannot be empty."))
+        return value
     def validate_vendor(self, value):
         if not value:
             raise serializers.ValidationError(_("Vendor cannot be empty."))
         return value
-   
+    def validate(self, attrs):
+        if attrs['category'] not in PRODUCT_TYPES:
+            raise serializers.ValidationError(_("Invalid product type."))
+        return attrs
     def create(self, validated_data):
         reviews_data = validated_data.pop('reviews', [])
         product = Product.objects.create(**validated_data)

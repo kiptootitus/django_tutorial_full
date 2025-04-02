@@ -12,11 +12,9 @@ except ImportError:
         ('Free', 'Free'),
         ('Premium', 'Premium'),
     )
-def get_default_user():
-    first_user = User.objects.first()
-    return first_user.id if first_user else None
 
-class Vendor(models.Model):  # Removed AccountsHandler inheritance
+class Vendor(models.Model):
+    vendor = models.OneToOneField('auth.User', on_delete=models.CASCADE, to_field='username', unique=True)
     description = models.TextField(max_length=50, blank=False, null=False)
     vendor_email = models.EmailField(null=False, blank=False, default='')
     seller_name = models.CharField(max_length=50, blank=False, null=False)
@@ -24,14 +22,11 @@ class Vendor(models.Model):  # Removed AccountsHandler inheritance
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['seller_name']
         unique_together = ['description', 'vendor_email', 'seller_name', 'store_name']
-
-    def __str__(self):
-        return self.store_name
-
 class Subscription(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     plan_type = models.CharField(max_length=20, choices=PLAN_CHOICES, default='Free')
@@ -57,14 +52,7 @@ class VendorBankDetail(models.Model):
 
 class VendorReview(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name="reviews")
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name="profile",
-        null=True,
-        blank=True,
-        default=get_default_user
-    )
+    user = models.ForeignKey("auth.User", on_delete=models.CASCADE, default='')
     rating = models.PositiveSmallIntegerField(choices=[(i, i) for i in range(1, 6)],validators=[MinValueValidator(1), MaxValueValidator(5)])
     review = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

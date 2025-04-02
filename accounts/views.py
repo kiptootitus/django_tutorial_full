@@ -22,7 +22,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from accounts.forms import ProfileForm
 from accounts.models import Profile
 from accounts.serializers import ProfileSerializer, RegisterSerializer
-from .models import Flights  # Assuming the Flight model is in the flights app
+from .models import Flights 
 
 
 def home(request):
