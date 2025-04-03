@@ -1,9 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import User
 from accounts_handler import AccountsHandler  # Assuming this is a valid import
 from functools import wraps
 from django.core.validators import MinValueValidator, MaxValueValidator
-
+from django.conf import settings
 try:
     from config import PLAN_CHOICES
 except ImportError:
@@ -12,9 +11,11 @@ except ImportError:
         ('Free', 'Free'),
         ('Premium', 'Premium'),
     )
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 class Vendor(models.Model):
-    vendor = models.OneToOneField('auth.User', on_delete=models.CASCADE, to_field='username', unique=True)
+    vendor = models.OneToOneField(User, on_delete=models.CASCADE, default=1)
     description = models.TextField(max_length=50, blank=False, null=False)
     vendor_email = models.EmailField(null=False, blank=False, default='')
     seller_name = models.CharField(max_length=50, blank=False, null=False)

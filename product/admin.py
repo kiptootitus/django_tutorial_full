@@ -24,11 +24,11 @@ class ProductCategoryAdmin(admin.ModelAdmin):
         return request.user.is_staff  # Allow staff users to view
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price', 'stock', 'user',  'date_created', 'date_modified')
+    list_display = ('name', 'category', 'price', 'stock','date_created', 'date_modified')
     search_fields = ('name',)
     ordering = ['-name']
     list_filter = ('category', 'name')
-    fields = ('name', 'description', 'category', 'price', 'stock', 'user','images')
+    fields = ('name', 'description', 'category', 'price', 'stock', 'vendor','images')
 
     def has_add_permission(self, request):
         return request.user.is_superuser

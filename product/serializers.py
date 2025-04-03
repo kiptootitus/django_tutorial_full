@@ -1,4 +1,5 @@
 from django.db import models
+from rest_framework.reverse import reverse
 from rest_framework import serializers
 from .models import Product, ProductReview, ProductCategory
 from config import PRODUCT_TYPES
@@ -9,6 +10,10 @@ from django.utils import timezone
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']  # Adjust fields as needed
 
 
 class ProductCategorySerializer(serializers.ModelSerializer):
@@ -37,6 +42,7 @@ class ProductCategorySerializer(serializers.ModelSerializer):
         return instance
 
 class ProductReviewSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = ProductReview
         fields = '__all__'
@@ -61,6 +67,8 @@ class ProductReviewSerializer(serializers.ModelSerializer):
         return instance
 class ProductSerializer(serializers.ModelSerializer):
     reviews = ProductReviewSerializer(many=True, required=False)
+    vendor_user = serializers.PrimaryKeyRelatedField(read_only=True)  # Return only the ID
+    url = serializers.HyperlinkedIdentityField(view_name='product_detail', read_only=True)
 
     class Meta:
         model = Product
@@ -68,13 +76,21 @@ class ProductSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True},
+            'url': {'read_only': True},
         }
+
 
     def validate_name(self, value):
         if not value:
             raise serializers.ValidationError(_("Product name cannot be empty."))
         return value
 
+    def get_url(self, obj):
+        request = self.context.get('request')
+        if request is None:
+            return None
+        return reverse("product_detail", kwargs={"pk": obj.pk}, request=request)
+    
     def validate_category(self, value):
         valid_categories = [choice[0] for choice in PRODUCT_TYPES]
         if value not in valid_categories:
@@ -96,17 +112,15 @@ class ProductSerializer(serializers.ModelSerializer):
         if not value:
             raise serializers.ValidationError(_("Vendor cannot be empty."))
         return value
-    def validate(self, attrs):
-        if attrs['category'] not in PRODUCT_TYPES:
-            raise serializers.ValidationError(_("Invalid product type."))
-        return attrs
+    # def validate(self, attrs):
+    #     if attrs['category'] not in PRODUCT_TYPES:
+    #         raise serializers.ValidationError(_("Invalid product type."))
+    #     return attrs
     def create(self, validated_data):
-        reviews_data = validated_data.pop('reviews', [])
-        product = Product.objects.create(**validated_data)
-      
-        for review_data in reviews_data:
-            ProductReview.objects.create(product=product, **review_data)
-        return product
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            validated_data["vendor"] = request.user
+        return super().create(validated_data)
     def update(self, instance, validated_data):
         # Handle nested reviews data
         reviews_data = validated_data.pop('reviews', [])
@@ -118,7 +132,7 @@ class ProductSerializer(serializers.ModelSerializer):
         instance.price = validated_data.get('price', instance.price)
         instance.stock = validated_data.get('stock', instance.stock)
         instance.images = validated_data.get('images', instance.images)  # Handle images correctly
-        instance.vendor = validated_data.get('vendor', instance.vendor)
+        instance.vendor= validated_data.get('vendor', instance.vendor)
         instance.save()
 
         # Update or create reviews
