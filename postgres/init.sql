@@ -1,8 +1,8 @@
--- Create a user
-CREATE USER titus WITH PASSWORD 'newpassword';
-
--- Create a database
-CREATE DATABASE tutorial OWNER titus;
-
--- Optional: Grant all privileges to the user on the database
-GRANT ALL PRIVILEGES ON DATABASE tutorial TO titus;
+DO
+$$
+BEGIN
+   IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'titus') THEN
+      CREATE USER titus WITH PASSWORD 'newpassword';
+   END IF;
+END
+$$;
