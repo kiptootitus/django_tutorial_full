@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  app:
+    image: django_tutorial
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8050:8050"  # Changed from 8000 to 8050 as per your config
+    command: python manage.py runserver 0.0.0.0:8050  # Updated to match port
+    environment:
+      - DJANGO_ENV=development
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - database
+      - redis
+
+  database:
+    image: postgres  # Specific version instead of latest
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5434:5432"  # Maps host port 5433 to container port 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Named volume for persistence
+
+  redis:
+    image: redis:latest  # Specific version instead of latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - cache-data:/data
+
+volumes:
+  postgres_data:  # Added for database persistence
+  cache-data:

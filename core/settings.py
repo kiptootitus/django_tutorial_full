@@ -1,19 +1,17 @@
 from pathlib import Path
+from decouple import Config, Csv
 import os
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+# Load environment variables
+config = Config(repository=Path(BASE_DIR) / '.env')  # Adjust path if necessary
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-88$(w8z8w9r%-n!%!n2_k41)&6lyoi$df94^a1kldn#aw!@lv$'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-88$(w8z8w9r%-n!%!n2_k41)&6lyoi$df94^a1kldn#aw!@lv$')
+DEBUG = config('DEBUG', default=False, cast=bool)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -25,16 +23,14 @@ INSTALLED_APPS = [
     'scripts',
     'vendors.apps.VendorsConfig',
     'product.apps.ProductConfig',
-    
-    # thirdparty apps
+
+    # third party apps
     'phonenumber_field',
     'corsheaders',
     'rest_framework',
     'django_extensions',
     'rest_framework_simplejwt',
     'drf_yasg',
-    
-    
 ]
 
 MIDDLEWARE = [
@@ -53,7 +49,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR /'templates'],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -68,19 +64,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-
-# Database
-
+# Database settings
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('POSTGRES_DB', default='tutorial'),
+        'USER': config('POSTGRES_USER', default='titus'),
+        'PASSWORD': config('POSTGRES_PASSWORD', default='newpassword'),
+        'HOST': config('POSTGRES_HOST', default='localhost'),
+        'PORT': config('POSTGRES_PORT', default='5432'),
     }
 }
 
-
 # Password validation
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -98,56 +94,51 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 # Static files settings
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "static", 
-]
-# STATIC_ROOT is not needed in development (used in production with collectstatic)
-STATIC_ROOT = BASE_DIR / 'staticfiles/'  # Or just remove this line
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
+# Media files settings
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Create media directory if it doesn't exist
+os.makedirs(MEDIA_ROOT, exist_ok=True)
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CORS settings
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000", 
-    
+    "http://localhost:8050",
 ]
 
+# REST Framework settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-
 }
 
+# Redis settings
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://127.0.0.1:6379/1', 
+        'LOCATION': config('REDIS_HOST', default='redis') + ":" + config('REDIS_PORT', default='6379') + "/1",
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         },
-        'KEY_PREFIX': 'profiles_list'  
+        'KEY_PREFIX': 'profiles_list'
     }
 }
-
-# Media files settings
-MEDIA_URL = '/media/'  # URL to access media files
-MEDIA_ROOT = BASE_DIR / 'media' 
-
-if not MEDIA_ROOT.exists():
-    MEDIA_ROOT.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,16 @@
+Django~=5.1.7
+djangorestframework~=3.15.2
+drf-yasg~=1.21.10
+pandas~=2.2.3
+django-phonenumber-field~=8.0.0
+django-cors-headers
+django-extensions
+djangorestframework-simplejwt
+django-redis
+drf-yasg
+phonenumbers
+pillow
+numpy
+python-decouple~=3.8
+dynaconf~=3.2.10
+psycopg2-binary~=2.9
