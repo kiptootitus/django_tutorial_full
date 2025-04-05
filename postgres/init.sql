@@ -1,8 +1,2 @@
-DO
-$$
-BEGIN
-   IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'titus') THEN
-      CREATE USER titus WITH PASSWORD 'newpassword';
-   END IF;
-END
-$$;
+CREATE
+DATABASE $POSTGRES_DB WITH OWNER = '$POSTGRES_USER';

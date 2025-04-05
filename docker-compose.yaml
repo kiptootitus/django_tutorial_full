@@ -2,39 +2,41 @@ version: '3.8'
 
 services:
   app:
-    image: django_tutorial
+    container_name: django_tutorial_full
+    hostname: django_tutorial_full
     build:
       context: .
       dockerfile: Dockerfile
+      target: ${ENVIRONMENT}
     ports:
       - "8050:8050"
     env_file:
       - .env
+    stdin_open: true
+    tty: true
     volumes:
-      - .:/app
+
+      - static_volume:/home/app/web/static
+      - media_volume:/home/app/web/media
     depends_on:
-      - db
+      - database
       - redis
     networks:
-      - backend
-    command: ["./wait-for-it.sh", "db:5432", "--", "python", "manage.py", "runserver", "0.0.0.0:8050"]
-  db:
+      - default
+      - internal_local_network
+
+  database:
     image: postgres:16.8-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
     env_file:
       - .env
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 5s
-      retries: 5
-    networks:
-      - backend
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=${POSTGRES_HOST}
 
   redis:
     image: redis:latest
@@ -43,11 +45,14 @@ services:
     volumes:
       - cache-data:/data
     networks:
-      - backend
+      - default
 
 volumes:
   postgres_data:
   cache-data:
+  static_volume:
+  media_volume:
 
 networks:
-  backend:
+  default:
+  internal_local_network:
