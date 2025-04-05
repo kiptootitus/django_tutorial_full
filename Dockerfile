@@ -22,7 +22,7 @@ RUN apt-get update && \
 # Install Python dependencies
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir --no-deps -r requirements.txt
+RUN pip install --no-cache -r requirements.txt
 
 # Copy and prepare entrypoint scripts
 COPY entrypoint.sh .
