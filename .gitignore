@@ -1,16 +1,15 @@
 # Python bytecode files
-*.pyc
-*.pyo
+*.pyc/
+*.pyo/
 __pycache__/
 
 # Environment variables
-.env
-*.env
+.env/
 
 # Django specific
-*.sqlite3
-db.sqlite3
-*.log
+*.sqlite3/
+db.sqlite3/
+*.log/
 
 # Virtual environment
 venv/
@@ -25,7 +24,7 @@ env/
 Thumbs.db
 
 # Ignore the api.http file
-api.http
+api.http/
 
 # Ignore datasets
 datasets/
@@ -58,6 +57,6 @@ media/
 ~*
 
 # Ignore logs and debug files
-*.log
+*.log/
 *.out
 *.err

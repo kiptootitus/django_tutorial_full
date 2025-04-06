@@ -34,9 +34,11 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework_simplejwt',
     'drf_yasg',
+        'debug_toolbar',  # Add this
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -67,15 +69,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'tutorial'),
-        'USER': os.getenv('POSTGRES_USER', 'titus'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'newpassword'),
-        'HOST': 'database',
-        'PORT': '5432',
+        'NAME': config('POSTGRES_DB', default='tutorial'),
+        'USER': config('POSTGRES_USER', default='titus'),
+        'PASSWORD': config('POSTGRES_PASSWORD', default='newpassword'),
+        'HOST': config('POSTGRES_HOST', default='database'),
+        'PORT': config('POSTGRES_PORT', default='5432'),
     }
 }
 
@@ -98,6 +99,10 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 # Ensure staticfiles directory exists
 os.makedirs(STATIC_ROOT, exist_ok=True)
 
@@ -107,8 +112,7 @@ STATICFILES_FINDERS = [
 ]
 
 # Media files
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+
 os.makedirs(MEDIA_ROOT, exist_ok=True)
 
 # Default primary key field
@@ -117,6 +121,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8050",
+    "http://localhost:8000",
     "http://localhost:3000",  # React dev
     "http://localhost:5173",  # Vite dev
 ]
@@ -129,6 +134,10 @@ REST_FRAMEWORK = {
     ],
 }
 
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+
 # Redis cache
 CACHES = {
     'default': {
@@ -139,4 +148,43 @@ CACHES = {
         },
         'KEY_PREFIX': 'profiles_list'
     }
+}
+
+# Debug Toolbar
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
+# Email backend for development
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Logging for development
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        '': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
 }
